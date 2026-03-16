@@ -39,10 +39,23 @@
       padding:20px;
     }
 
+    @media (max-width: 699px){
+      .app{
+        padding:12px;
+      }
+    }
+
     .pageTitle{
       font-size:24px;
       font-weight:900;
       margin:0 0 16px;
+    }
+
+    @media (max-width: 699px){
+      .pageTitle{
+        font-size:20px;
+        margin-bottom:12px;
+      }
     }
 
     .layout{
@@ -66,6 +79,19 @@
       box-shadow:0 12px 24px rgba(62, 43, 30, 0.06);
     }
 
+    @media (min-width: 1200px){
+      .panel{
+        position:sticky;
+        top:16px;
+      }
+    }
+
+    @media (max-width: 699px){
+      .panel{
+        padding:12px;
+      }
+    }
+
     .panelTitle{
       font-size:18px;
       font-weight:900;
@@ -85,6 +111,12 @@
       border-radius:14px;
       padding:14px;
       margin-top:12px;
+    }
+
+    @media (max-width: 699px){
+      .section{
+        padding:10px;
+      }
     }
 
     .sectionTitle{
@@ -195,12 +227,26 @@
       box-shadow:0 14px 28px rgba(62, 43, 30, 0.06);
     }
 
+    @media (max-width: 699px){
+      .exportCard{
+        padding:12px;
+      }
+    }
+
     .exportHeader{
       display:flex;
       justify-content:space-between;
       align-items:flex-end;
       gap:12px;
       margin-bottom:10px;
+    }
+
+    @media (max-width: 699px){
+      .exportHeader{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:4px;
+      }
     }
 
     .exportHeaderTitle{
@@ -220,7 +266,7 @@
     }
 
     .exportArea{
-      width:980px;
+      width:100%;
       max-width:100%;
       padding:20px;
       border-radius:18px;
@@ -244,6 +290,28 @@
       font-size:12px;
       font-weight:800;
       opacity:0.95;
+    }
+
+    @media (min-width: 900px){
+      .exportArea{
+        width:980px;
+      }
+    }
+
+    @media (max-width: 699px){
+      .exportArea{
+        padding:12px;
+        border-radius:14px;
+      }
+
+      th, td{
+        padding:8px 5px;
+        font-size:13px;
+      }
+
+      th.leftHead{
+        width:120px;
+      }
     }
 
     table{
