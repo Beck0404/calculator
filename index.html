@@ -1,0 +1,821 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>2026珍食堡餵食建議表格產生器</title>
+
+  <style>
+    :root{
+      --ink:#2b1f18;
+      --line:#3a2a22;
+      --panel:#b88c63;
+      --panel2:#c79a6f;
+      --cream:#f3e2c9;
+      --cream2:#e9d1b4;
+      --ui-bg:#faf7f3;
+      --card-bg:#ffffff;
+      --soft:#f7f2ed;
+      --soft-line:#e5dbd2;
+      --muted:#6b625c;
+    }
+
+    *{
+      box-sizing:border-box;
+    }
+
+    body{
+      font-family:"Noto Sans TC", system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+      margin:0;
+      color:var(--ink);
+      background:var(--ui-bg);
+    }
+
+    .app{
+      max-width:1400px;
+      margin:0 auto;
+      padding:20px;
+    }
+
+    .pageTitle{
+      font-size:24px;
+      font-weight:900;
+      margin:0 0 16px;
+    }
+
+    .layout{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:18px;
+    }
+
+    @media (min-width: 1200px){
+      .layout{
+        grid-template-columns:420px minmax(0,1fr);
+        align-items:start;
+      }
+    }
+
+    .panel{
+      background:var(--card-bg);
+      border:1px solid var(--soft-line);
+      border-radius:16px;
+      padding:16px;
+    }
+
+    .panelTitle{
+      font-size:18px;
+      font-weight:900;
+      margin:0 0 12px;
+    }
+
+    .panelDesc{
+      font-size:13px;
+      color:var(--muted);
+      line-height:1.6;
+      margin:0 0 10px;
+    }
+
+    .section{
+      border:1px solid var(--soft-line);
+      background:var(--soft);
+      border-radius:14px;
+      padding:14px;
+      margin-top:12px;
+    }
+
+    .sectionTitle{
+      font-size:14px;
+      font-weight:900;
+      margin:0 0 10px;
+    }
+
+    label{
+      display:block;
+      font-size:13px;
+      font-weight:800;
+      margin:10px 0 6px;
+    }
+
+    input, select, button{
+      width:100%;
+      border-radius:10px;
+      border:1px solid #cfc6be;
+      padding:10px 12px;
+      font-size:15px;
+      background:#fff;
+      color:var(--ink);
+    }
+
+    input[disabled], select[disabled]{
+      background:#f1ece7;
+      color:var(--muted);
+    }
+
+    .grid2,
+    .grid3{
+      display:grid;
+      gap:10px;
+    }
+
+    .grid2{
+      grid-template-columns:1fr;
+    }
+
+    .grid3{
+      grid-template-columns:1fr;
+    }
+
+    @media (min-width: 700px){
+      .grid2{
+        grid-template-columns:1fr 1fr;
+      }
+      .grid3{
+        grid-template-columns:1fr 1fr 1fr;
+      }
+    }
+
+    .helper{
+      margin-top:6px;
+      font-size:12px;
+      line-height:1.6;
+      color:var(--muted);
+    }
+
+    .btnRow{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:10px;
+      margin-top:14px;
+    }
+
+    @media (min-width: 700px){
+      .btnRow{
+        grid-template-columns:1fr 1fr;
+      }
+    }
+
+    button{
+      cursor:pointer;
+      font-weight:900;
+      background:#fff;
+    }
+
+    .exportCard{
+      background:#fff;
+      border:1px solid var(--soft-line);
+      border-radius:16px;
+      padding:16px;
+    }
+
+    .exportHeader{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-end;
+      gap:12px;
+      margin-bottom:10px;
+    }
+
+    .exportHeaderTitle{
+      font-size:18px;
+      font-weight:900;
+    }
+
+    .exportHeaderMeta{
+      font-size:12px;
+      color:var(--muted);
+      font-weight:700;
+    }
+
+    .previewWrap{
+      overflow:auto;
+      padding-bottom:6px;
+    }
+
+    .exportArea{
+      width:980px;
+      max-width:100%;
+      padding:18px;
+      border-radius:18px;
+      border:2px solid var(--line);
+      color:var(--ink);
+      background:
+        radial-gradient(ellipse at 20% 30%, rgba(255,255,255,0.15), rgba(255,255,255,0) 55%),
+        radial-gradient(ellipse at 80% 70%, rgba(0,0,0,0.10), rgba(0,0,0,0) 60%),
+        repeating-linear-gradient(90deg,
+          rgba(255,255,255,0.06) 0px,
+          rgba(255,255,255,0.06) 10px,
+          rgba(0,0,0,0.05) 11px,
+          rgba(0,0,0,0.02) 22px
+        ),
+        linear-gradient(180deg, var(--panel2), var(--panel));
+    }
+
+    .exportTitle{
+      display:flex;
+      justify-content:flex-end;
+      align-items:flex-end;
+      margin-bottom:10px;
+    }
+
+    .exportTitle small{
+      font-size:12px;
+      font-weight:800;
+      opacity:0.95;
+    }
+
+    table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      table-layout:fixed;
+      overflow:hidden;
+      border-radius:14px;
+    }
+
+    th, td{
+      border:2px solid var(--line);
+      padding:10px 8px;
+      text-align:center;
+      font-weight:800;
+    }
+
+    th.leftHead{
+      width:180px;
+      background:linear-gradient(180deg, var(--cream), var(--cream2));
+    }
+
+    th.colHead{
+      background:linear-gradient(180deg, var(--cream), var(--cream2));
+    }
+
+    td{
+      background:rgba(255,255,255,0.22);
+    }
+
+    .jpTable th{
+      background:linear-gradient(180deg, var(--cream), var(--cream2));
+    }
+
+    .jpTable td{
+      background:rgba(255,255,255,0.22);
+    }
+
+    .jpLeft{
+      text-align:left;
+      padding-left:12px;
+    }
+
+    .foot{
+      margin-top:10px;
+      font-size:12px;
+      font-weight:700;
+      line-height:1.55;
+      color:#2d2019;
+      opacity:0.95;
+    }
+
+    .foot .mono{
+      font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-weight:800;
+    }
+
+    .statusBox{
+      margin-top:12px;
+      padding:10px 12px;
+      border-radius:12px;
+      background:#f8f3ee;
+      border:1px solid var(--soft-line);
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.6;
+    }
+  </style>
+
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+</head>
+
+<body>
+  <div class="app">
+    <h1 class="pageTitle">2026珍食堡餵食建議表格產生器</h1>
+
+    <div class="layout">
+      <div class="panel">
+        <h2 class="panelTitle">操作設定</h2>
+        <p class="panelDesc">左側調整參數，右側即時預覽輸出結果。完成後可直接匯出 PNG 提供設計師排版參考。</p>
+
+        <div class="section">
+          <div class="sectionTitle">基本設定</div>
+
+          <div class="grid3">
+            <div>
+              <label>類型</label>
+              <select id="mode">
+                <option value="main">主食</option>
+                <option value="treat">零食</option>
+              </select>
+            </div>
+
+            <div>
+              <label>物種</label>
+              <select id="species">
+                <option value="dog">狗</option>
+                <option value="cat">貓</option>
+              </select>
+            </div>
+
+            <div>
+              <label>生活狀態係數</label>
+              <select id="factor"></select>
+            </div>
+          </div>
+
+          <div class="helper" id="modeNote">
+            主食：克數 = MER ÷ (kcal/kg ÷ 1000)，杯數四捨五入到最近的 1/8 杯。<br/>
+            零食：克數 = MER × 10% ÷ (kcal/kg ÷ 1000)，以體重區間輸出範圍。
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="sectionTitle">代謝能設定</div>
+
+          <div class="grid3">
+            <div>
+              <label>代謝能輸入方式</label>
+              <select id="meInputMode">
+                <option value="direct">直接輸入代謝能</option>
+                <option value="estimate">以成分估算代謝能</option>
+              </select>
+            </div>
+
+            <div id="directMeBlock">
+              <label>代謝能 (kcal/kg)</label>
+              <input id="me" type="number" step="1" min="500" placeholder="例如 3140" />
+            </div>
+
+            <div id="meCalculatedBlock" style="display:none;">
+              <label>計算後代謝能 (kcal/kg)</label>
+              <input id="meCalculated" type="text" disabled value="" />
+            </div>
+          </div>
+
+          <div id="estimateBlock" style="display:none;">
+            <div class="grid3">
+              <div>
+                <label>蛋白質 (%)</label>
+                <input id="protein" type="number" step="0.1" min="0" max="100" placeholder="例如 26" />
+              </div>
+              <div>
+                <label>脂質 (%)</label>
+                <input id="fat" type="number" step="0.1" min="0" max="100" placeholder="例如 14" />
+              </div>
+              <div>
+                <label>纖維 (%)</label>
+                <input id="fiber" type="number" step="0.1" min="0" max="100" placeholder="例如 4" />
+              </div>
+            </div>
+
+            <div class="grid3">
+              <div>
+                <label>灰分 (%)</label>
+                <input id="ash" type="number" step="0.1" min="0" max="100" placeholder="例如 8" />
+              </div>
+              <div>
+                <label>水分 (%)</label>
+                <input id="moisture" type="number" step="0.1" min="0" max="100" placeholder="例如 10" />
+              </div>
+              <div>
+                <label>估算出的 NFE (%)</label>
+                <input id="nfeCalculated" type="text" disabled value="" />
+              </div>
+            </div>
+
+            <div class="helper">
+              成分估算使用 Modified Atwater 公式。<br/>
+              NFE = 100 - 水分 - 蛋白質 - 脂質 - 纖維 - 灰分<br/>
+              ME kcal/kg = 10 × [3.5 × (蛋白質 + NFE) + 8.5 × 脂質]
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="sectionTitle">主食附加設定</div>
+
+          <div class="grid2">
+            <div id="cupGramBlock">
+              <label>杯量換算 每杯幾克</label>
+              <input id="cupGram" type="number" step="1" min="1" value="125" />
+            </div>
+
+            <div id="mainWeightBlock">
+              <label>主食體重欄位 (kg)</label>
+              <input id="weightsKg" type="text" value="2,4,6,8,10,15" />
+            </div>
+          </div>
+
+          <div class="helper">
+            主食模式下才會使用杯量換算與主食體重欄位。<br/>
+            貓的預設體重欄位為 3,4,5,6,7,8,9。
+          </div>
+        </div>
+
+        <div class="btnRow">
+          <button id="genBtn">更新預覽</button>
+          <button id="pngBtn">匯出 PNG</button>
+        </div>
+
+        <div class="statusBox">
+          建議流程：先確認類型、物種、代謝能來源，再確認主食或零食的輸出格式是否符合此次包裝需求。
+        </div>
+      </div>
+
+      <div class="exportCard">
+        <div class="exportHeader">
+          <div class="exportHeaderTitle">輸出預覽</div>
+          <div class="exportHeaderMeta">右側版面即為匯出圖片內容</div>
+        </div>
+
+        <div class="previewWrap">
+          <div id="exportArea" class="exportArea">
+            <div class="exportTitle">
+              <small id="metaText">ME kcal/kg, cup g</small>
+            </div>
+
+            <div id="tableHolder"></div>
+
+            <div class="foot" id="footNote">
+              <div><span class="mono">US LEGAL CUP</span> 以重量換算參考，實際以重量更準。</div>
+              <div>請依體態、活動量、年齡調整餵食量。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const MAIN_WEIGHTS_DEFAULT = {
+    dog: "2,4,6,8,10,15",
+    cat: "3,4,5,6,7,8,9"
+  };
+
+  const FACTORS = {
+    dog: [
+      { label: "成犬 已結紮 1.6", value: 1.6 },
+      { label: "成犬 未結紮 1.8", value: 1.8 },
+      { label: "低活動或肥胖傾向 1.3", value: 1.3 },
+      { label: "減重 1.0（理想體重）", value: 1.0 }
+    ],
+    cat: [
+      { label: "成貓 已結紮 1.3", value: 1.3 },
+      { label: "成貓 未結紮 1.5", value: 1.5 },
+      { label: "低活動或肥胖傾向 1.0", value: 1.0 },
+      { label: "減重 0.9（理想體重）", value: 0.9 }
+    ]
+  };
+
+  const TREAT_LOCK = {
+    dog: 1.6,
+    cat: 1.3
+  };
+
+  function rer(bwKg){
+    return 70 * Math.pow(bwKg, 0.75);
+  }
+
+  function kgToLb(kg){
+    return kg * 2.2046226218;
+  }
+
+  function parseWeights(input){
+    return input
+      .split(",")
+      .map(x => Number(String(x).trim()))
+      .filter(x => Number.isFinite(x) && x > 0);
+  }
+
+  function gcd(a, b){
+    a = Math.abs(a);
+    b = Math.abs(b);
+    while(b){
+      const t = a % b;
+      a = b;
+      b = t;
+    }
+    return a || 1;
+  }
+
+  function cupsToEighthString(cups){
+    if(!Number.isFinite(cups) || cups <= 0) return "0";
+
+    const denom = 8;
+    const rounded = Math.round(cups * denom) / denom;
+    const whole = Math.floor(rounded + 1e-12);
+    const frac = rounded - whole;
+    let num = Math.round(frac * denom);
+
+    if(num === 0) return String(whole);
+    if(num === denom) return String(whole + 1);
+
+    const g = gcd(num, denom);
+    num = num / g;
+    const d = denom / g;
+
+    if(whole === 0) return `${num}/${d}`;
+    return `${whole} ${num}/${d}`;
+  }
+
+  function roundToInteger(x){
+    return Math.round(x);
+  }
+
+  function setFactorOptions(){
+    const species = document.getElementById("species").value;
+    const factorEl = document.getElementById("factor");
+    factorEl.innerHTML = "";
+
+    const opts = FACTORS[species];
+    for(const o of opts){
+      const opt = document.createElement("option");
+      opt.value = String(o.value);
+      opt.textContent = o.label;
+      factorEl.appendChild(opt);
+    }
+    factorEl.value = String(opts[0].value);
+  }
+
+  function setMainWeightsDefaultIfNeeded(){
+    const mode = document.getElementById("mode").value;
+    const species = document.getElementById("species").value;
+    if(mode !== "main") return;
+    document.getElementById("weightsKg").value = MAIN_WEIGHTS_DEFAULT[species];
+  }
+
+  function updateModeUI(){
+    const mode = document.getElementById("mode").value;
+    const species = document.getElementById("species").value;
+
+    const mainWeightBlock = document.getElementById("mainWeightBlock");
+    const cupGramBlock = document.getElementById("cupGramBlock");
+    const factorEl = document.getElementById("factor");
+    const note = document.getElementById("modeNote");
+
+    if(mode === "main"){
+      mainWeightBlock.style.display = "";
+      cupGramBlock.style.display = "";
+      factorEl.disabled = false;
+      note.innerHTML =
+        "主食：克數 = MER ÷ (kcal/kg ÷ 1000)，杯數四捨五入到最近的 1/8 杯。<br/>" +
+        "零食：克數 = MER × 10% ÷ (kcal/kg ÷ 1000)，以體重區間輸出範圍。";
+      setMainWeightsDefaultIfNeeded();
+    } else {
+      mainWeightBlock.style.display = "none";
+      cupGramBlock.style.display = "none";
+      factorEl.disabled = true;
+      factorEl.value = String(TREAT_LOCK[species]);
+      note.innerHTML =
+        "零食：克數 = MER × 10% ÷ (kcal/kg ÷ 1000)。<br/>" +
+        "零食模式係數已鎖定，狗為 1.6，貓為 1.3。";
+    }
+  }
+
+  function updateMeInputUI(){
+    const mode = document.getElementById("meInputMode").value;
+
+    document.getElementById("directMeBlock").style.display = mode === "direct" ? "" : "none";
+    document.getElementById("estimateBlock").style.display = mode === "estimate" ? "" : "none";
+    document.getElementById("meCalculatedBlock").style.display = mode === "estimate" ? "" : "none";
+
+    updateCalculatedME();
+  }
+
+  function estimateMEFromProximate(){
+    const protein = Number(document.getElementById("protein").value);
+    const fat = Number(document.getElementById("fat").value);
+    const fiber = Number(document.getElementById("fiber").value);
+    const ash = Number(document.getElementById("ash").value);
+    const moisture = Number(document.getElementById("moisture").value);
+
+    const vals = [protein, fat, fiber, ash, moisture];
+    if(vals.some(v => !Number.isFinite(v) || v < 0)){
+      return { ok:false, message:"請完整輸入蛋白質、脂質、纖維、灰分、水分" };
+    }
+
+    const sum = protein + fat + fiber + ash + moisture;
+    if(sum > 100){
+      return { ok:false, message:"成分總和超過 100%，請檢查輸入值" };
+    }
+
+    const nfe = 100 - moisture - protein - fat - fiber - ash;
+    if(nfe < 0){
+      return { ok:false, message:"計算出的 NFE 小於 0，請檢查輸入值" };
+    }
+
+    const me = 10 * ((3.5 * (protein + nfe)) + (8.5 * fat));
+    return { ok:true, me, nfe };
+  }
+
+  function updateCalculatedME(){
+    const mode = document.getElementById("meInputMode").value;
+    const meCalculatedEl = document.getElementById("meCalculated");
+    const nfeCalculatedEl = document.getElementById("nfeCalculated");
+
+    if(mode === "direct"){
+      meCalculatedEl.value = "";
+      nfeCalculatedEl.value = "";
+      return;
+    }
+
+    const result = estimateMEFromProximate();
+    if(result.ok){
+      meCalculatedEl.value = String(Math.round(result.me));
+      nfeCalculatedEl.value = result.nfe.toFixed(1);
+    } else {
+      meCalculatedEl.value = "";
+      nfeCalculatedEl.value = "";
+    }
+  }
+
+  function getEffectiveME(){
+    const mode = document.getElementById("meInputMode").value;
+
+    if(mode === "direct"){
+      const me = Number(document.getElementById("me").value);
+      if(!Number.isFinite(me) || me <= 0){
+        throw new Error("請輸入代謝能 (kcal/kg)");
+      }
+      return me;
+    }
+
+    const result = estimateMEFromProximate();
+    if(!result.ok){
+      throw new Error(result.message);
+    }
+    return result.me;
+  }
+
+  function buildMainTable(species, weightsKg, gramsArr, cupsArr){
+    const leftLabel = species === "dog" ? "DOG WEIGHT" : "CAT WEIGHT";
+
+    let html = "<table><tr>";
+    html += `<th class="leftHead">${leftLabel}</th>`;
+
+    for(const kg of weightsKg){
+      const lb = kgToLb(kg);
+      const lbText = (Math.round(lb * 10) / 10).toString();
+      html += `<th class="colHead">${lbText} lb<br/>(${kg} kg)</th>`;
+    }
+    html += "</tr>";
+
+    html += '<tr><th class="leftHead">GRAMS</th>';
+    for(const g of gramsArr){
+      html += `<td>${roundToInteger(g)}</td>`;
+    }
+    html += "</tr>";
+
+    html += '<tr><th class="leftHead">CUPS</th>';
+    for(const c of cupsArr){
+      html += `<td>${cupsToEighthString(c)}</td>`;
+    }
+    html += "</tr>";
+
+    html += "</table>";
+    return html;
+  }
+
+  function getTreatRanges(species){
+    if(species === "cat"){
+      return [
+        { label: "小型貓 (1–3 kg)", min: 1, max: 3 },
+        { label: "中型貓 (4–5 kg)", min: 4, max: 5 },
+        { label: "大型貓 (6–7 kg)", min: 6, max: 7 },
+        { label: "特大型貓 (8–10 kg)", min: 8, max: 10 }
+      ];
+    }
+    return [
+      { label: "超小型犬 (1–5 kg)", min: 1, max: 5 },
+      { label: "小型犬 (6–10 kg)", min: 6, max: 10 },
+      { label: "中型犬 (11–20 kg)", min: 11, max: 20 },
+      { label: "大型犬 (21–40 kg)", min: 21, max: 40 }
+    ];
+  }
+
+  function buildTreatTable(species, me, factor){
+    const ranges = getTreatRanges(species);
+    const kcalPerG = me / 1000;
+    const header = species === "dog" ? "1日給予量的目安（成犬）" : "1日給予量的目安（成貓）";
+
+    let html = '<table class="jpTable">';
+    html += `<tr>
+      <th class="leftHead">${header}</th>
+      <th class="colHead">每日克數</th>
+    </tr>`;
+
+    for(const r of ranges){
+      const merMin = rer(r.min) * factor;
+      const merMax = rer(r.max) * factor;
+
+      const gMin = roundToInteger((merMin * 0.10) / kcalPerG);
+      const gMax = roundToInteger((merMax * 0.10) / kcalPerG);
+
+      html += `<tr>
+        <td class="jpLeft">${r.label}</td>
+        <td>${gMin}–${gMax} g</td>
+      </tr>`;
+    }
+
+    html += "</table>";
+    return html;
+  }
+
+  function generate(){
+    try{
+      updateCalculatedME();
+
+      const mode = document.getElementById("mode").value;
+      const species = document.getElementById("species").value;
+      const me = getEffectiveME();
+      const factor = Number(document.getElementById("factor").value);
+      const cupGram = Number(document.getElementById("cupGram").value);
+
+      const metaText = document.getElementById("metaText");
+      const holder = document.getElementById("tableHolder");
+
+      if(mode === "main"){
+        const weightsKg = parseWeights(document.getElementById("weightsKg").value);
+        if(weightsKg.length === 0){
+          throw new Error("請輸入主食體重欄位 (kg)，以逗號分隔");
+        }
+        if(!Number.isFinite(cupGram) || cupGram <= 0){
+          throw new Error("請輸入每杯幾克");
+        }
+
+        const gramsArr = [];
+        const cupsArr = [];
+
+        for(const w of weightsKg){
+          const MER = rer(w) * factor;
+          const grams = MER / (me / 1000);
+          gramsArr.push(grams);
+          cupsArr.push(grams / cupGram);
+        }
+
+        holder.innerHTML = buildMainTable(species, weightsKg, gramsArr, cupsArr);
+        metaText.textContent = `MAIN FOOD  ME ${Math.round(me)} kcal/kg, 1 cup = ${Math.round(cupGram)} g, cups rounded to 1/8`;
+        document.getElementById("footNote").style.display = "";
+      } else {
+        const lockVal = TREAT_LOCK[species];
+        holder.innerHTML = buildTreatTable(species, me, lockVal);
+        metaText.textContent = `TREATS  ME ${Math.round(me)} kcal/kg, calculated by 10% of daily energy`;
+        document.getElementById("footNote").style.display = "none";
+      }
+    } catch(err){
+      alert(err.message);
+    }
+  }
+
+  async function exportPNG(){
+    const node = document.getElementById("exportArea");
+    const canvas = await html2canvas(node, { backgroundColor: null, scale: 2 });
+    const a = document.createElement("a");
+    a.href = canvas.toDataURL("image/png");
+    a.download = "feeding-guide.png";
+    a.click();
+  }
+
+  document.getElementById("species").addEventListener("change", () => {
+    setFactorOptions();
+    updateModeUI();
+    generate();
+  });
+
+  document.getElementById("mode").addEventListener("change", () => {
+    updateModeUI();
+    generate();
+  });
+
+  document.getElementById("meInputMode").addEventListener("change", () => {
+    updateMeInputUI();
+  });
+
+  document.getElementById("me").addEventListener("input", updateCalculatedME);
+
+  ["protein","fat","fiber","ash","moisture"].forEach(id => {
+    document.getElementById(id).addEventListener("input", updateCalculatedME);
+  });
+
+  document.getElementById("genBtn").addEventListener("click", () => {
+    updateModeUI();
+    updateMeInputUI();
+    generate();
+  });
+
+  document.getElementById("pngBtn").addEventListener("click", exportPNG);
+
+  setFactorOptions();
+  updateModeUI();
+  updateMeInputUI();
+  generate();
+</script>
+</body>
+</html>
