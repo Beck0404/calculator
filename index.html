@@ -251,8 +251,28 @@
       border-collapse:separate;
       border-spacing:0;
       table-layout:fixed;
-      overflow:hidden;
       border-radius:14px;
+      background:rgba(255,255,255,0.35);
+    }
+
+    #tableHolder table{
+      overflow:visible;
+    }
+
+    #tableHolder table tr:first-child > *:first-child{
+      border-top-left-radius:12px;
+    }
+
+    #tableHolder table tr:first-child > *:last-child{
+      border-top-right-radius:12px;
+    }
+
+    #tableHolder table tr:last-child > *:first-child{
+      border-bottom-left-radius:12px;
+    }
+
+    #tableHolder table tr:last-child > *:last-child{
+      border-bottom-right-radius:12px;
     }
 
     th, td{
@@ -286,6 +306,10 @@
     .jpLeft{
       text-align:left;
       padding-left:12px;
+    }
+
+    .jpTable th.leftHead{
+      white-space:nowrap;
     }
 
     .foot{
@@ -705,6 +729,74 @@
     return html;
   }
 
+
+  function buildMainPlaceholderTable(species, weightsKg){
+    const leftLabel = species === "dog" ? "DOG WEIGHT" : "CAT WEIGHT";
+
+    let html = "<table><tr>";
+    html += `<th class="leftHead">${leftLabel}</th>`;
+
+    for(const kg of weightsKg){
+      const lb = kgToLb(kg);
+      const lbText = (Math.round(lb * 10) / 10).toString();
+      html += `<th class="colHead">${lbText} lb<br/>(${kg} kg)</th>`;
+    }
+    html += "</tr>";
+
+    html += '<tr><th class="leftHead">GRAMS</th>';
+    for(const _ of weightsKg){
+      html += '<td>—</td>';
+    }
+    html += "</tr>";
+
+    html += '<tr><th class="leftHead">CUPS</th>';
+    for(const _ of weightsKg){
+      html += '<td>—</td>';
+    }
+    html += "</tr>";
+
+    html += "</table>";
+    return html;
+  }
+
+  function buildTreatPlaceholderTable(species){
+    const ranges = getTreatRanges(species);
+    const header = species === "dog" ? "1日給予量的目安（成犬）" : "1日給予量的目安（成貓）";
+
+    let html = '<table class="jpTable">';
+    html += `<tr>
+      <th class="leftHead">${header}</th>
+      <th class="colHead">每日克數</th>
+    </tr>`;
+
+    for(const r of ranges){
+      html += `<tr>
+        <td class="jpLeft">${r.label}</td>
+        <td>—</td>
+      </tr>`;
+    }
+
+    html += "</table>";
+    return html;
+  }
+
+  function renderPlaceholder(){
+    const mode = document.getElementById("mode").value;
+    const species = document.getElementById("species").value;
+    const holder = document.getElementById("tableHolder");
+
+    if(mode === "main"){
+      const rawWeights = parseWeights(document.getElementById("weightsKg").value);
+      const weightsKg = rawWeights.length > 0 ? rawWeights : parseWeights(MAIN_WEIGHTS_DEFAULT[species]);
+      holder.innerHTML = buildMainPlaceholderTable(species, weightsKg);
+      document.getElementById("footNote").style.display = "";
+      return;
+    }
+
+    holder.innerHTML = buildTreatPlaceholderTable(species);
+    document.getElementById("footNote").style.display = "none";
+  }
+
   function getTreatRanges(species){
     if(species === "cat"){
       return [
@@ -793,6 +885,7 @@
         document.getElementById("footNote").style.display = "none";
       }
     } catch(err){
+      renderPlaceholder();
       if(!silent){
         alert(err.message);
       }
@@ -823,10 +916,21 @@
     updateMeInputUI();
   });
 
-  document.getElementById("me").addEventListener("input", updateCalculatedME);
+  document.getElementById("me").addEventListener("input", () => {
+    updateCalculatedME();
+    generate({ silent: true });
+  });
 
   ["protein","fat","fiber","ash","moisture"].forEach(id => {
-    document.getElementById(id).addEventListener("input", updateCalculatedME);
+    document.getElementById(id).addEventListener("input", () => {
+      updateCalculatedME();
+      generate({ silent: true });
+    });
+  });
+
+  ["weightsKg", "cupGram", "factor"].forEach(id => {
+    document.getElementById(id).addEventListener("input", () => generate({ silent: true }));
+    document.getElementById(id).addEventListener("change", () => generate({ silent: true }));
   });
 
   document.getElementById("genBtn").addEventListener("click", () => {
@@ -840,6 +944,7 @@
   setFactorOptions();
   updateModeUI();
   updateMeInputUI();
+  renderPlaceholder();
 </script>
 </body>
 </html>
