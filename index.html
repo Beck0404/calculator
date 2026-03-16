@@ -312,6 +312,14 @@
       white-space:nowrap;
     }
 
+    .jpTable .treatHead{
+      width:260px;
+    }
+
+    .jpTable .treatQty{
+      width:140px;
+    }
+
     .foot{
       margin-top:10px;
       font-size:12px;
@@ -386,7 +394,7 @@
           <div class="sectionTitle">代謝能設定</div>
 
           <div class="grid3">
-            <div>
+            <div class="wideCol">
               <label>代謝能輸入方式</label>
               <select id="meInputMode">
                 <option value="direct">直接輸入代謝能</option>
@@ -765,8 +773,8 @@
 
     let html = '<table class="jpTable">';
     html += `<tr>
-      <th class="leftHead">${header}</th>
-      <th class="colHead">每日克數</th>
+      <th class="leftHead treatHead">${header}</th>
+      <th class="colHead treatQty">每日克數</th>
     </tr>`;
 
     for(const r of ranges){
@@ -821,8 +829,8 @@
 
     let html = '<table class="jpTable">';
     html += `<tr>
-      <th class="leftHead">${header}</th>
-      <th class="colHead">每日克數</th>
+      <th class="leftHead treatHead">${header}</th>
+      <th class="colHead treatQty">每日克數</th>
     </tr>`;
 
     for(const r of ranges){
