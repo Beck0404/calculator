@@ -8,9 +8,9 @@
   <style>
     :root{
       --ink:#2b1f18;
-      --line:#3a2a22;
-      --panel:#b88c63;
-      --panel2:#c79a6f;
+      --line:#6d5a4a;
+      --panel:#f2e6d7;
+      --panel2:#f7efe4;
       --cream:#f3e2c9;
       --cream2:#e9d1b4;
       --ui-bg:#faf7f3;
@@ -18,6 +18,8 @@
       --soft:#f7f2ed;
       --soft-line:#e5dbd2;
       --muted:#6b625c;
+      --accent:#b88c63;
+      --accent-soft:#efe1d3;
     }
 
     *{
@@ -60,7 +62,8 @@
       background:var(--card-bg);
       border:1px solid var(--soft-line);
       border-radius:16px;
-      padding:16px;
+      padding:18px;
+      box-shadow:0 12px 24px rgba(62, 43, 30, 0.06);
     }
 
     .panelTitle{
@@ -97,6 +100,10 @@
       margin:10px 0 6px;
     }
 
+    .noWrapLabel{
+      white-space:nowrap;
+    }
+
     input, select, button{
       width:100%;
       border-radius:10px;
@@ -105,6 +112,15 @@
       font-size:15px;
       background:#fff;
       color:var(--ink);
+      transition:border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+    }
+
+    input:focus,
+    select:focus,
+    button:focus-visible{
+      outline:none;
+      border-color:var(--accent);
+      box-shadow:0 0 0 3px rgba(184,140,99,0.2);
     }
 
     input[disabled], select[disabled]{
@@ -133,6 +149,10 @@
       .grid3{
         grid-template-columns:1fr 1fr 1fr;
       }
+
+      .wideCol{
+        grid-column:span 2;
+      }
     }
 
     .helper{
@@ -158,7 +178,13 @@
     button{
       cursor:pointer;
       font-weight:900;
-      background:#fff;
+      border:1px solid #d6c6b8;
+      background:linear-gradient(180deg, #fff, #f8f0e7);
+    }
+
+    button:hover{
+      transform:translateY(-1px);
+      box-shadow:0 6px 14px rgba(62,43,30,0.12);
     }
 
     .exportCard{
@@ -166,6 +192,7 @@
       border:1px solid var(--soft-line);
       border-radius:16px;
       padding:16px;
+      box-shadow:0 14px 28px rgba(62, 43, 30, 0.06);
     }
 
     .exportHeader{
@@ -195,20 +222,15 @@
     .exportArea{
       width:980px;
       max-width:100%;
-      padding:18px;
+      padding:20px;
       border-radius:18px;
       border:2px solid var(--line);
       color:var(--ink);
       background:
-        radial-gradient(ellipse at 20% 30%, rgba(255,255,255,0.15), rgba(255,255,255,0) 55%),
-        radial-gradient(ellipse at 80% 70%, rgba(0,0,0,0.10), rgba(0,0,0,0) 60%),
-        repeating-linear-gradient(90deg,
-          rgba(255,255,255,0.06) 0px,
-          rgba(255,255,255,0.06) 10px,
-          rgba(0,0,0,0.05) 11px,
-          rgba(0,0,0,0.02) 22px
-        ),
+        radial-gradient(circle at 18% 18%, rgba(255,255,255,0.75), rgba(255,255,255,0) 46%),
+        radial-gradient(circle at 82% 78%, rgba(248,231,210,0.58), rgba(248,231,210,0) 52%),
         linear-gradient(180deg, var(--panel2), var(--panel));
+      box-shadow:inset 0 1px 0 rgba(255,255,255,0.75);
     }
 
     .exportTitle{
@@ -229,8 +251,28 @@
       border-collapse:separate;
       border-spacing:0;
       table-layout:fixed;
-      overflow:hidden;
       border-radius:14px;
+      background:rgba(255,255,255,0.35);
+    }
+
+    #tableHolder table{
+      overflow:visible;
+    }
+
+    #tableHolder table tr:first-child > *:first-child{
+      border-top-left-radius:12px;
+    }
+
+    #tableHolder table tr:first-child > *:last-child{
+      border-top-right-radius:12px;
+    }
+
+    #tableHolder table tr:last-child > *:first-child{
+      border-bottom-left-radius:12px;
+    }
+
+    #tableHolder table tr:last-child > *:last-child{
+      border-bottom-right-radius:12px;
     }
 
     th, td{
@@ -250,7 +292,7 @@
     }
 
     td{
-      background:rgba(255,255,255,0.22);
+      background:rgba(255,255,255,0.72);
     }
 
     .jpTable th{
@@ -258,12 +300,16 @@
     }
 
     .jpTable td{
-      background:rgba(255,255,255,0.22);
+      background:rgba(255,255,255,0.72);
     }
 
     .jpLeft{
       text-align:left;
       padding-left:12px;
+    }
+
+    .jpTable th.leftHead{
+      white-space:nowrap;
     }
 
     .foot{
@@ -284,7 +330,7 @@
       margin-top:12px;
       padding:10px 12px;
       border-radius:12px;
-      background:#f8f3ee;
+      background:var(--accent-soft);
       border:1px solid var(--soft-line);
       font-size:12px;
       color:var(--muted);
@@ -324,7 +370,7 @@
               </select>
             </div>
 
-            <div>
+            <div class="wideCol">
               <label>生活狀態係數</label>
               <select id="factor"></select>
             </div>
@@ -353,8 +399,8 @@
               <input id="me" type="number" step="1" min="500" placeholder="例如 3140" />
             </div>
 
-            <div id="meCalculatedBlock" style="display:none;">
-              <label>計算後代謝能 (kcal/kg)</label>
+            <div id="meCalculatedBlock" class="wideCol" style="display:none;">
+              <label class="noWrapLabel">計算後代謝能 (kcal/kg)</label>
               <input id="meCalculated" type="text" disabled value="" />
             </div>
           </div>
@@ -683,6 +729,74 @@
     return html;
   }
 
+
+  function buildMainPlaceholderTable(species, weightsKg){
+    const leftLabel = species === "dog" ? "DOG WEIGHT" : "CAT WEIGHT";
+
+    let html = "<table><tr>";
+    html += `<th class="leftHead">${leftLabel}</th>`;
+
+    for(const kg of weightsKg){
+      const lb = kgToLb(kg);
+      const lbText = (Math.round(lb * 10) / 10).toString();
+      html += `<th class="colHead">${lbText} lb<br/>(${kg} kg)</th>`;
+    }
+    html += "</tr>";
+
+    html += '<tr><th class="leftHead">GRAMS</th>';
+    for(const _ of weightsKg){
+      html += '<td>—</td>';
+    }
+    html += "</tr>";
+
+    html += '<tr><th class="leftHead">CUPS</th>';
+    for(const _ of weightsKg){
+      html += '<td>—</td>';
+    }
+    html += "</tr>";
+
+    html += "</table>";
+    return html;
+  }
+
+  function buildTreatPlaceholderTable(species){
+    const ranges = getTreatRanges(species);
+    const header = species === "dog" ? "1日給予量的目安（成犬）" : "1日給予量的目安（成貓）";
+
+    let html = '<table class="jpTable">';
+    html += `<tr>
+      <th class="leftHead">${header}</th>
+      <th class="colHead">每日克數</th>
+    </tr>`;
+
+    for(const r of ranges){
+      html += `<tr>
+        <td class="jpLeft">${r.label}</td>
+        <td>—</td>
+      </tr>`;
+    }
+
+    html += "</table>";
+    return html;
+  }
+
+  function renderPlaceholder(){
+    const mode = document.getElementById("mode").value;
+    const species = document.getElementById("species").value;
+    const holder = document.getElementById("tableHolder");
+
+    if(mode === "main"){
+      const rawWeights = parseWeights(document.getElementById("weightsKg").value);
+      const weightsKg = rawWeights.length > 0 ? rawWeights : parseWeights(MAIN_WEIGHTS_DEFAULT[species]);
+      holder.innerHTML = buildMainPlaceholderTable(species, weightsKg);
+      document.getElementById("footNote").style.display = "";
+      return;
+    }
+
+    holder.innerHTML = buildTreatPlaceholderTable(species);
+    document.getElementById("footNote").style.display = "none";
+  }
+
   function getTreatRanges(species){
     if(species === "cat"){
       return [
@@ -728,7 +842,8 @@
     return html;
   }
 
-  function generate(){
+  function generate(options = {}){
+    const { silent = false } = options;
     try{
       updateCalculatedME();
 
@@ -770,7 +885,10 @@
         document.getElementById("footNote").style.display = "none";
       }
     } catch(err){
-      alert(err.message);
+      renderPlaceholder();
+      if(!silent){
+        alert(err.message);
+      }
     }
   }
 
@@ -786,22 +904,33 @@
   document.getElementById("species").addEventListener("change", () => {
     setFactorOptions();
     updateModeUI();
-    generate();
+    generate({ silent: true });
   });
 
   document.getElementById("mode").addEventListener("change", () => {
     updateModeUI();
-    generate();
+    generate({ silent: true });
   });
 
   document.getElementById("meInputMode").addEventListener("change", () => {
     updateMeInputUI();
   });
 
-  document.getElementById("me").addEventListener("input", updateCalculatedME);
+  document.getElementById("me").addEventListener("input", () => {
+    updateCalculatedME();
+    generate({ silent: true });
+  });
 
   ["protein","fat","fiber","ash","moisture"].forEach(id => {
-    document.getElementById(id).addEventListener("input", updateCalculatedME);
+    document.getElementById(id).addEventListener("input", () => {
+      updateCalculatedME();
+      generate({ silent: true });
+    });
+  });
+
+  ["weightsKg", "cupGram", "factor"].forEach(id => {
+    document.getElementById(id).addEventListener("input", () => generate({ silent: true }));
+    document.getElementById(id).addEventListener("change", () => generate({ silent: true }));
   });
 
   document.getElementById("genBtn").addEventListener("click", () => {
@@ -815,7 +944,7 @@
   setFactorOptions();
   updateModeUI();
   updateMeInputUI();
-  generate();
+  renderPlaceholder();
 </script>
 </body>
 </html>
