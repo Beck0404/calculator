@@ -100,6 +100,10 @@
       margin:10px 0 6px;
     }
 
+    .noWrapLabel{
+      white-space:nowrap;
+    }
+
     input, select, button{
       width:100%;
       border-radius:10px;
@@ -144,6 +148,10 @@
       }
       .grid3{
         grid-template-columns:1fr 1fr 1fr;
+      }
+
+      .wideCol{
+        grid-column:span 2;
       }
     }
 
@@ -338,7 +346,7 @@
               </select>
             </div>
 
-            <div>
+            <div class="wideCol">
               <label>生活狀態係數</label>
               <select id="factor"></select>
             </div>
@@ -367,8 +375,8 @@
               <input id="me" type="number" step="1" min="500" placeholder="例如 3140" />
             </div>
 
-            <div id="meCalculatedBlock" style="display:none;">
-              <label>計算後代謝能 (kcal/kg)</label>
+            <div id="meCalculatedBlock" class="wideCol" style="display:none;">
+              <label class="noWrapLabel">計算後代謝能 (kcal/kg)</label>
               <input id="meCalculated" type="text" disabled value="" />
             </div>
           </div>
@@ -742,7 +750,8 @@
     return html;
   }
 
-  function generate(){
+  function generate(options = {}){
+    const { silent = false } = options;
     try{
       updateCalculatedME();
 
@@ -784,7 +793,9 @@
         document.getElementById("footNote").style.display = "none";
       }
     } catch(err){
-      alert(err.message);
+      if(!silent){
+        alert(err.message);
+      }
     }
   }
 
@@ -800,12 +811,12 @@
   document.getElementById("species").addEventListener("change", () => {
     setFactorOptions();
     updateModeUI();
-    generate();
+    generate({ silent: true });
   });
 
   document.getElementById("mode").addEventListener("change", () => {
     updateModeUI();
-    generate();
+    generate({ silent: true });
   });
 
   document.getElementById("meInputMode").addEventListener("change", () => {
@@ -829,7 +840,6 @@
   setFactorOptions();
   updateModeUI();
   updateMeInputUI();
-  generate();
 </script>
 </body>
 </html>
